@@ -1,23 +1,19 @@
 # Testing SUT using GraphWalker
 
-One Paragraph of project description goes here
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+SUT: https://www.mathsisfun.com/games/connect4.html
 
 ### Prerequisites
 
 ```
 
-- Selenium jar files
-- Chrome driver
-- GraphWalker
-- Maven
-- yED tool (for opening the .graphml)
+- Selenium jar files (http://www.seleniumhq.org/download/)
+- Chrome driver (https://sites.google.com/a/chromium.org/chromedriver/downloads)
+- GraphWalker (http://graphwalker.github.io/download/) - we used standalone CLI
+- Maven (https://maven.apache.org/install.html)
+- yED tool (https://www.yworks.com/products/yed) - for opening the model with .graphml extension
 
 ```
 
 ## Running the tests
 
-We open the project in IDEA (we used InteliJ), include additional libaries in the project (Selenium jar files) and then run the tests.
+Open the project in IDEA (we used InteliJ), change the path to the chrome driver, include additional libaries in the project (Selenium jar files), run the tests.
