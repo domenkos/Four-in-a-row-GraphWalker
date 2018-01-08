@@ -64,17 +64,6 @@ public class SimpleTest extends ExecutionContext implements four_in_a_row_4 {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public void coin_3_7_r() {
         String s = driver.findElement(By.xpath("//*[@id=\"formo\"]/table/tbody/tr/td[2]/table/tbody/tr[2]/td/table/tbody/tr[7]/td[3]/a/img")).getAttribute("src");
@@ -89,7 +78,7 @@ public class SimpleTest extends ExecutionContext implements four_in_a_row_4 {
 
     @Override
     public void change_to_human() {
-        System.setProperty("webdriver.chrome.driver", "D://OneDrive - Univerza v Ljubljani//Radboud University//Testing Techniques//SeleniumTEST//chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C://chromedriver.exe");
         driver = new ChromeDriver();
         baseUrl = "https://www.mathsisfun.com/";
         driver.get(baseUrl + "/games/connect4.html");

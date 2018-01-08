@@ -1,0 +1,267 @@
+{-
+TorXakis - Model Based Testing
+Copyright (c) 2015-2016 TNO and Radboud University
+See license.txt
+-}
+
+-- ----------------------------------------------------- --
+
+CHANDEF  MyChannels
+ ::=
+         In   :: Object
+       ; Out  :: Result
+
+ENDDEF
+
+-- ----------------------------------------------------- --
+
+MODELDEF  Mod
+ ::=
+     CHAN IN    In 
+     CHAN OUT   Out
+ 
+     BEHAVIOUR
+                pRestart [In,Out] ()
+ENDDEF
+
+
+-- ----------------------------------------------------------------- --
+
+TYPEDEF  Object
+                ::=  Restart_Game | Throw_1_7_r | Throw_2_7_r
+				| Throw_3_7_r | Throw_4_7_r | Throw_5_7_r | Throw_6_7_r | Throw_7_7_r
+				| Throw_2_7_b 
+ENDDEF
+
+
+TYPEDEF  Result
+                ::=  Start | New_game | Coin_1_7_r | Coin_2_7_r | Coin_3_7_r | Coin_4_7_r
+				| Coin_5_7_r | Coin_6_7_r | Coin_7_7_r | Coin_2_7_b | Coin_1_6_r | Coin_2_6_b
+				| Coin_1_5_r | Coin_2_5_b | Winner_r | Coin_2_5_r | Coin_2_4_b | Coin_2_3_r 
+				| Coin_2_2_b | Fail
+ENDDEF
+
+
+-- ----------------------------------------------------------------- --
+
+PROCDEF pRestart [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Restart_Game  >-> pNew_game [In,Out] ()
+ENDDEF
+
+
+PROCDEF pNew_game [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_1_7_r     >-> pCoin_1_7_r [In,Out] ()
+		##
+        In ! Throw_2_7_r     >-> pCoin_2_7_r [In,Out] ()
+		##
+        In ! Throw_3_7_r     >-> pCoin_3_7_r [In,Out] ()
+		##
+        In ! Throw_4_7_r     >-> pCoin_4_7_r [In,Out] ()
+		##
+        In ! Throw_5_7_r     >-> pCoin_5_7_r [In,Out] ()
+		##
+        In ! Throw_6_7_r     >-> pCoin_6_7_r [In,Out] ()
+		##
+        In ! Throw_7_7_r     >-> pCoin_7_7_r [In,Out] ()
+ENDDEF
+
+-- Left path down ------------------------------------------
+
+PROCDEF pCoin_1_7_r [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_b  >-> pCoin_2_7_b [In,Out] ()
+		##
+		Out ! Coin_1_7_r >-> pRestart [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_7_b [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_1_7_r  >-> pCoin_1_6_r [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_1_6_r [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_b  >-> pCoin_2_6_b [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_6_b [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_1_7_r  >-> pCoin_1_5_r [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_1_5_r [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_b  >-> pCoin_2_5_b [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_5_b [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_1_7_r  >-> pWinner_r [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pWinner_r [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Winner_r  >-> pRestart [In,Out] ()
+ENDDEF
+
+-- left second path down ---------------------------------------
+
+PROCDEF pCoin_2_7_r [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_b  >-> pCoin_2_6_b_2 [In,Out] ()
+		##
+		Out ! Coin_2_7_r >-> pRestart [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_6_b_2 [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_r  >-> pCoin_2_5_r [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_5_r [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_b  >-> pCoin_2_4_b [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_4_b [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_r  >-> pCoin_2_3_r [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_3_r [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_2_7_b  >-> pCoin_2_2_b [In,Out] ()
+		##
+		In ! Restart_Game >-> pNew_game [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_2_2_b [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Coin_2_2_b  >-> pRestart [In,Out] ()
+ENDDEF
+
+-- first row check each one -------------------------------------
+
+PROCDEF pCoin_3_7_r [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Coin_3_7_r  >-> pRestart [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_4_7_r [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Coin_4_7_r  >-> pRestart [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_5_7_r [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Coin_5_7_r  >-> pRestart [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_6_7_r [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Coin_6_7_r  >-> pRestart [In,Out] ()
+ENDDEF
+
+PROCDEF pCoin_7_7_r [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Coin_7_7_r  >->  pRestart [In,Out] ()
+ENDDEF
+
+-- ----------------------------------------------------- --
+
+CNECTDEF  Sut
+ ::=
+     CLIENTSOCK
+
+     CHAN OUT  In                      HOST "localhost"  PORT 7890
+     ENCODE    In ? obj            ->  ! obj2str (obj)
+
+     CHAN IN   Out                     HOST "localhost"  PORT 7890
+     DECODE    Out ! str2res (s)  <-   ? s
+ENDDEF
+
+-- ----------------------------------------------------- --
+
+FUNCDEF  obj2str ( obj :: Object )  :: String
+ ::=
+    IF isRestart_Game(obj)
+		THEN "Restart_Game"
+	ELSE IF isThrow_1_7_r(obj)
+		THEN "Throw_1_7_r"
+	ELSE IF isThrow_2_7_r(obj)
+		THEN "Throw_2_7_r"
+	ELSE IF isThrow_3_7_r(obj)
+		THEN "Throw_3_7_r"
+	ELSE IF isThrow_4_7_r(obj)
+		THEN "Throw_4_7_r"
+	ELSE IF isThrow_5_7_r(obj)
+		THEN "Throw_5_7_r"
+	ELSE IF isThrow_6_7_r(obj)
+		THEN "Throw_6_7_r"
+	ELSE IF isThrow_7_7_r(obj)
+		THEN "Throw_7_7_r"
+	ELSE IF isThrow_2_7_b(obj)
+		THEN "Throw_2_7_b"
+	ELSE "Error"
+	FI FI FI FI FI FI FI FI FI
+ENDDEF
+
+FUNCDEF  str2res ( s :: String )  :: Result
+ ::=
+    IF s == "New_game"
+		THEN New_game
+    ELSE IF s == "Coin_1_7_r"
+		THEN Coin_1_7_r
+	ELSE IF s == "Coin_2_7_r"
+		THEN Coin_2_7_r
+	ELSE IF s == "Coin_3_7_r"
+		THEN Coin_3_7_r
+	ELSE IF s == "Coin_4_7_r"
+		THEN Coin_4_7_r
+	ELSE IF s == "Coin_5_7_r"
+		THEN Coin_5_7_r
+	ELSE IF s == "Coin_6_7_r"
+		THEN Coin_6_7_r
+	ELSE IF s == "Coin_7_7_r"
+		THEN Coin_7_7_r
+	ELSE IF s == "Coin_2_7_b"
+		THEN Coin_2_7_b
+	ELSE IF s == "Coin_1_6_r"
+		THEN Coin_1_6_r
+	ELSE IF s == "Coin_2_6_b"
+		THEN Coin_2_6_b
+	ELSE IF s == "Coin_1_5_r"
+		THEN Coin_1_5_r
+	ELSE IF s == "Coin_2_5_b"
+		THEN Coin_2_5_b
+	ELSE IF s == "Winner_r"
+		THEN Winner_r
+	ELSE IF s == "Coin_2_5_r"
+		THEN Coin_2_5_r
+	ELSE IF s == "Coin_2_4_b"
+		THEN Coin_2_4_b
+	ELSE IF s == "Coin_2_3_r"
+		THEN Coin_2_3_r
+	ELSE IF s == "Coin_2_2_b"
+		THEN Coin_2_2_b
+	ELSE Fail
+	FI FI FI FI FI FI FI FI FI FI FI FI FI FI FI FI FI FI
+ENDDEF
