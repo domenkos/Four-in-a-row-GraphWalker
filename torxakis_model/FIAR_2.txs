@@ -1,0 +1,151 @@
+{-
+TorXakis - Model Based Testing
+Copyright (c) 2015-2016 TNO and Radboud University
+See license.txt
+-}
+
+-- ----------------------------------------------------- --
+
+CHANDEF  MyChannels
+ ::=
+         In   :: Object
+       ; Out  :: Result
+
+ENDDEF
+
+-- ----------------------------------------------------- --
+
+MODELDEF  Mod
+ ::=
+     CHAN IN    In 
+     CHAN OUT   Out
+ 
+     BEHAVIOUR
+                pRestart [In,Out] ()
+ENDDEF
+
+
+-- ----------------------------------------------------------------- --
+
+TYPEDEF  Object
+                ::=  Restart_Game | Throw_1 | Throw_2 |Throw_3 | Throw_4 | Throw_5 | Throw_6 | Throw_7 
+ENDDEF
+
+
+TYPEDEF  Result
+                ::=  Ok | WinP1 | WinP2 | Fail | Draw
+ENDDEF
+
+
+-- ----------------------------------------------------------------- --
+
+PROCDEF pRestart [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Restart_Game  >-> p1Turn [In,Out] ()
+ENDDEF
+
+
+PROCDEF p1Turn [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_1     >-> checkP1 [In,Out] ()
+		##
+        In ! Throw_2     >-> checkP1 [In,Out] ()
+		##
+        In ! Throw_3     >-> checkP1 [In,Out] ()
+		##
+        In ! Throw_4     >-> checkP1 [In,Out] ()
+		##
+        In ! Throw_5     >-> checkP1 [In,Out] ()
+		##
+        In ! Throw_6     >-> checkP1 [In,Out] ()
+		##
+        In ! Throw_7     >-> checkP1 [In,Out] ()
+ENDDEF
+
+PROCDEF checkP1 [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Ok >-> p2Turn [In,Out] ()
+		##
+		Out ! WinP1 >-> pRestart [In,Out] ()
+		##
+		Out ! Fail >-> p1Turn [In,Out] ()
+		##
+		Out ! Draw >-> pRestart [In,Out] ()
+ENDDEF
+
+PROCDEF p2Turn [ In :: Object; Out :: Result ] ()
+ ::=
+        In ! Throw_1     >-> checkP2 [In,Out] ()
+		##
+        In ! Throw_2     >-> checkP2 [In,Out] ()
+		##
+        In ! Throw_3     >-> checkP2 [In,Out] ()
+		##
+        In ! Throw_4     >-> checkP2 [In,Out] ()
+		##
+        In ! Throw_5     >-> checkP2 [In,Out] ()
+		##
+        In ! Throw_6     >-> checkP2 [In,Out] ()
+		##
+        In ! Throw_7     >-> checkP2 [In,Out] ()
+ENDDEF
+
+PROCDEF checkP2 [ In :: Object; Out :: Result ] ()
+ ::=
+        Out ! Ok >-> p1Turn [In,Out] ()
+		##
+		Out ! WinP2 >-> pRestart [In,Out] ()
+		##
+		Out ! Fail >-> p2Turn [In,Out] ()
+		##
+		Out ! Draw >-> pRestart [In,Out] ()
+ENDDEF
+
+CNECTDEF  Sut
+ ::=
+     CLIENTSOCK
+
+     CHAN OUT  In                      HOST "localhost"  PORT 7890
+     ENCODE    In ? obj            ->  ! obj2str (obj)
+
+     CHAN IN   Out                     HOST "localhost"  PORT 7890
+     DECODE    Out ! str2res (s)  <-   ? s
+ENDDEF
+
+-- ----------------------------------------------------- --
+
+FUNCDEF  obj2str ( obj :: Object )  :: String
+ ::=
+    IF isRestart_Game(obj)
+		THEN "Restart_Game"
+	ELSE IF isThrow_1(obj)
+		THEN "Throw_1"
+	ELSE IF isThrow_2(obj)
+		THEN "Throw_2"
+	ELSE IF isThrow_3(obj)
+		THEN "Throw_3"
+	ELSE IF isThrow_4(obj)
+		THEN "Throw_4"
+	ELSE IF isThrow_5(obj)
+		THEN "Throw_5"
+	ELSE IF isThrow_6(obj)
+		THEN "Throw_6"
+	ELSE IF isThrow_7(obj)
+		THEN "Throw_7"
+	ELSE "Error"
+	FI FI FI FI FI FI FI FI
+ENDDEF
+
+FUNCDEF  str2res ( s :: String )  :: Result
+ ::=
+    IF s == "Ok"
+		THEN Ok
+    ELSE IF s == "WinP1"
+		THEN WinP1
+	ELSE IF s == "WinP2"
+		THEN WinP2
+	ELSE IF s == "Draw"
+		THEN Draw
+	ELSE Fail
+	FI FI FI FI
+ENDDEF

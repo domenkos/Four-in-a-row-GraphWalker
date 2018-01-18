@@ -65,20 +65,20 @@ public class TorXakis {
     }
 
     public void init() throws InterruptedException {
+
         System.setProperty("webdriver.chrome.driver", "C://chromedriver.exe");
         driver = new ChromeDriver();
         baseUrl = "https://www.mathsisfun.com/";
         driver.get(baseUrl + "/games/connect4.html");
         driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
         driver.switchTo().frame(driver.findElement(By.xpath("//*[@id=\"content\"]/iframe")));
-
         Select select = new Select(driver.findElement(By.xpath("//*[@id=\"formo\"]/div[5]/select")));
         select.selectByVisibleText("Human");
 
         driver.findElement((By.xpath("//*[@id=\"formo\"]/div[4]/input"))).clear();
-        driver.findElement((By.xpath("//*[@id=\"formo\"]/div[4]/input"))).sendKeys("Automatic tester 1");
+        driver.findElement((By.xpath("//*[@id=\"formo\"]/div[4]/input"))).sendKeys("Player 1");
         driver.findElement((By.xpath("//*[@id=\"formo\"]/div[6]/input"))).clear();
-        driver.findElement((By.xpath("//*[@id=\"formo\"]/div[6]/input"))).sendKeys("Automatic tester 2");
+        driver.findElement((By.xpath("//*[@id=\"formo\"]/div[6]/input"))).sendKeys("Player 2");
 
         driver.findElement(By.xpath("//*[@id=\"formo\"]/div[1]/input[1]")).click();
         determineColour();
@@ -87,9 +87,13 @@ public class TorXakis {
 
     public void determineColour() {
         this.playersTurn = driver.findElement((By.xpath("//*[@id=\"texter\"]"))).getAttribute("value");
-        this.playerOne = "Automatic tester 1";
+        this.playerOne = "Player 1";
         this.startingColor = this.playersTurn.contains("1") ? "red" : "blu";
         this.player2Color = this.startingColor.equals("red") ? "blu" : "red";
+    }
+
+    public void throwCoin(int row){
+
     }
 
     public void throw_2_7_r() {
